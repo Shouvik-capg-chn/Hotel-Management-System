@@ -1,6 +1,8 @@
 package com.example.hotelManagement.serviceImpl;
 
+import com.example.hotelManagement.model.Reservation;
 import com.example.hotelManagement.model.Review;
+import com.example.hotelManagement.repository.ReservationRepository;
 import com.example.hotelManagement.repository.ReviewRepository;
 import com.example.hotelManagement.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,20 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+    
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Override
     public Review createReview(Review review) {
+        if (review.getReservation() != null && review.getReservation().getReservationId() != null) {
+            Reservation reservation = reservationRepository.findById(review.getReservation().getReservationId())
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+            review.setReservation(reservation);
+        } else {
+            throw new RuntimeException("Reservation ID is required");
+        }
+
         return reviewRepository.save(review);
     }
 

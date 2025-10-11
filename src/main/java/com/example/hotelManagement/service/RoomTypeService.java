@@ -29,4 +29,11 @@ public interface RoomTypeService {
      * @return RoomType if found; otherwise null
      */
     RoomType getRoomTypeById(Integer roomTypeId);
+    
+    /**
+     * Delete a RoomType by id.
+     * @param roomTypeId id of the RoomType to delete
+     * @return true if deleted, false if not found
+     */
+    boolean deleteRoomType(Integer roomTypeId);
 }

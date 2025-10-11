@@ -27,4 +27,7 @@ public interface RoomService {
 
     // PUT /api/room/update/{room_id}
     Room updateRoom(Integer roomId, Room updated);
+    
+    // DELETE /api/rooms/delete/{roomId}
+    void deleteRoom(Integer roomId);
 }

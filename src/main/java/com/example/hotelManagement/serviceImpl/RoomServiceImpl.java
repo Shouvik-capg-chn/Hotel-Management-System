@@ -84,4 +84,12 @@ public class RoomServiceImpl implements RoomService {
 
         return roomRepository.save(existing);
     }
+    
+    @Override
+    public void deleteRoom(Integer roomId) {
+        if (!roomRepository.existsById(roomId)) {
+            throw new IllegalStateException("ROOM_NOT_FOUND");
+        }
+        roomRepository.deleteById(roomId);
+    }
 }

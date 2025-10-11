@@ -2,6 +2,8 @@ package com.example.hotelManagement.controller;
 
 import com.example.hotelManagement.model.Amenity;
 import com.example.hotelManagement.service.AmenityService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,11 +12,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/amenity")
+@Tag(name = "Amenity Controller", description = "Operations related to hotel amenities")
 public class AmenityController {
 
     @Autowired
     private AmenityService amenityService;
 
+    @Operation(summary = "Add a new amenity")
     @PostMapping("/post")
     public ResponseEntity<?> createAmenity(@RequestBody Amenity amenity) {
         try {
@@ -25,6 +29,7 @@ public class AmenityController {
         }
     }
 
+    @Operation(summary = "Get all amenities")
     @GetMapping("/all")
     public ResponseEntity<?> getAllAmenities() {
         try {
@@ -35,6 +40,7 @@ public class AmenityController {
         }
     }
 
+    @Operation(summary = "Get amenity by ID")
     @GetMapping("/{id}")
     public ResponseEntity<?> getAmenityById(@PathVariable Integer id) {
         try {
@@ -45,6 +51,7 @@ public class AmenityController {
         }
     }
 
+    @Operation(summary = "Update an amenity by ID")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateAmenity(@PathVariable Integer id, @RequestBody Amenity amenity) {
         try {
@@ -55,6 +62,7 @@ public class AmenityController {
         }
     }
 
+    @Operation(summary = "Delete an amenity by ID")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteAmenity(@PathVariable Integer id) {
         try {

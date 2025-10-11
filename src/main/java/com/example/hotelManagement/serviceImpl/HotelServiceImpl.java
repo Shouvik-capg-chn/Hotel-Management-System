@@ -51,5 +51,14 @@ public class HotelServiceImpl implements HotelService {
 			return new ApiResponse("UPDATESUCCESS", "Hotel updated successfully");
 		}).orElseGet(() -> new ApiResponse("UPDTFAILS", "Hotel doesn't exist"));
 	}
+	
+	@Override
+	public ApiResponse deleteHotel(Integer hotelId) {
+	    if (!hotelRepository.existsById(hotelId)) {
+	        return new ApiResponse("DELETEFAILS", "Hotel doesn't exist");
+	    }
+	    hotelRepository.deleteById(hotelId);
+	    return new ApiResponse("DELETESUCCESS", "Hotel deleted successfully");
+	}
 
 }

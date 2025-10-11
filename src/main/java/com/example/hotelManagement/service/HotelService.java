@@ -18,4 +18,11 @@ public interface HotelService {
 	List<Hotel> getHotelsByAmenityId(Integer amenityId);
 
 	ApiResponse updateHotel(Integer hotelId, Hotel updatedHotel);
+	
+	/**
+	 * Delete a hotel by ID.
+	 * @param hotelId ID of the hotel to delete
+	 * @return ApiResponse indicating success or failure
+	 */
+	ApiResponse deleteHotel(Integer hotelId);
 }

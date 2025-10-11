@@ -21,10 +21,10 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
 
     // Rooms by amenity (via join table room_amenity)
     @Query(value = """
-        SELECT r.* 
-        FROM Room r 
-        JOIN room_amenity ra ON r.room_id = ra.room_id 
-        WHERE ra.amenity_id = :amenityId
-        """, nativeQuery = true)
-    List<Room> findByAmenityId(@Param("amenityId") Integer amenityId);
+    	    SELECT r.* 
+    	    FROM Room r 
+    	    JOIN roomamenity ra ON r.room_id = ra.room_id 
+    	    WHERE ra.amenity_id = :amenityId
+    	    """, nativeQuery = true)
+    	List<Room> findByAmenityId(@Param("amenityId") Integer amenityId);
 }

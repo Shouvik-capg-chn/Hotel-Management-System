@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api")
 public class RoomController {
@@ -18,7 +22,6 @@ public class RoomController {
         this.roomService = roomService;
     }
 
-    // Utility: build {code, message} response
     private Map<String, String> msg(String code, String message) {
         Map<String, String> m = new HashMap<>();
         m.put("code", code);
@@ -26,19 +29,7 @@ public class RoomController {
         return m;
     }
 
-    /**
-     * /api/rooms/post  POST  Create a new room.
-     * Success:
-     *  {
-     *    "code": "POSTSUCCESS",
-     *    "message": "room added successfully"
-     *  }
-     * Failure (room already exist):
-     *  {
-     *    "code": "ADDFAILS",
-     *    "message": "Room already exist"
-     *  }
-     */
+    @Operation(summary = "Create a new room")
     @PostMapping("/rooms/post")
     public ResponseEntity<?> createRoom(@RequestBody Room room) {
         try {
@@ -55,15 +46,7 @@ public class RoomController {
         }
     }
 
-    /**
-     * /api/room/all  GET  Get all rooms
-     * Success: returns List<Room>
-     * Failure (empty):
-     *  {
-     *    "code": "GETALLFAILS",
-     *    "message": "room list is empty"
-     *  }
-     */
+    @Operation(summary = "Get all rooms")
     @GetMapping("/room/all")
     public ResponseEntity<?> getAllRooms() {
         List<Room> rooms = roomService.getAllRooms();
@@ -72,18 +55,9 @@ public class RoomController {
                     .body(msg("GETALLFAILS", "room list is empty"));
         }
         return ResponseEntity.ok(rooms);
-        // (intentionally returning the list, as per your spec comment)
     }
 
-    /**
-     * /api/room/{room_id}  GET  Get a room
-     * Success: returns Room
-     * Failure:
-     *  {
-     *    "code": "GETALLFAILS",
-     *    "message": "room doesn't exist"
-     *  }
-     */
+    @Operation(summary = "Get room by ID")
     @GetMapping("/room/{room_id}")
     public ResponseEntity<?> getRoom(@PathVariable("room_id") Integer roomId) {
         return roomService.getRoomById(roomId)
@@ -92,15 +66,11 @@ public class RoomController {
                         .body(msg("GETALLFAILS", "room doesn't exist")));
     }
 
-    /**
-     * /api/rooms/available/{roomTypeId}  GET  Available rooms of a specific type
-     * Success: returns List<Room>
-     * Failure:
-     *  {
-     *    "code": "GETALLFAILS",
-     *    "message": "No room found with given type"
-     *  }
-     */
+    @Operation(summary = "Get available rooms by type")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Available rooms retrieved"),
+        @ApiResponse(responseCode = "404", description = "No room found with given type")
+    })
     @GetMapping("/rooms/available/{roomTypeId}")
     public ResponseEntity<?> getAvailableRoomsByType(@PathVariable Integer roomTypeId) {
         List<Room> rooms = roomService.getAvailableRoomsByType(roomTypeId);
@@ -111,11 +81,7 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
-    /**
-     * /api/rooms/location/{location}  GET  Rooms by location
-     * Success: returns List<Room>
-     * Failure (not specified in your examples): returning GETALLFAILS for consistency
-     */
+    @Operation(summary = "Get rooms by location")
     @GetMapping("/rooms/location/{location}")
     public ResponseEntity<?> getRoomsByLocation(@PathVariable String location) {
         List<Room> rooms = roomService.getRoomsByLocation(location);
@@ -126,15 +92,7 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
-    /**
-     * /api/rooms/amenities/{amenityId}  GET  Rooms that have a specific amenity
-     * Success: returns List<Room>
-     * Failure:
-     *  {
-     *    "code": "GETALLFAILS",
-     *    "message": "amenity doesn't exist with given id"
-     *  }
-     */
+    @Operation(summary = "Get rooms by amenity ID")
     @GetMapping("/rooms/amenities/{amenityId}")
     public ResponseEntity<?> getRoomsByAmenity(@PathVariable Integer amenityId) {
         List<Room> rooms = roomService.getRoomsByAmenity(amenityId);
@@ -145,28 +103,14 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
-    /**
-     * /api/rooms/{amenity_id}  GET  (Duplicate path per your spec)
-     * We'll wire it to the same logic as above.
-     */
-    @GetMapping("/rooms/{amenity_id}")
-    public ResponseEntity<?> getRoomsByAmenityDuplicate(@PathVariable("amenity_id") Integer amenityId) {
-        return getRoomsByAmenity(amenityId);
-    }
+    
+//    @Operation(summary = "Get rooms by amenity ID (duplicate path)")
+//    @GetMapping("/rooms/amenities/{amenity_id}")
+//    public ResponseEntity<?> getRoomsByAmenityDuplicate(@PathVariable("amenity_id") Integer amenityId) {
+//        return getRoomsByAmenity(amenityId); 
+//    }
 
-    /**
-     * /api/room/update/{room_id}  PUT  Update room details
-     * Success:
-     *  {
-     *    "code": "UPDATESUCCESS",
-     *    "message": "Room updated successfully"
-     *  }
-     * Failure:
-     *  {
-     *    "code": "UPDTFAILS",
-     *    "message": "Room doesn't exist"
-     *  }
-     */
+    @Operation(summary = "Update room details")
     @PutMapping("/room/update/{room_id}")
     public ResponseEntity<?> updateRoom(@PathVariable("room_id") Integer roomId, @RequestBody Room updated) {
         try {
@@ -183,6 +127,23 @@ public class RoomController {
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(msg("UPDTFAILS", "Unable to update room"));
+          
+        }
+    }
+    
+    @Operation(summary = "Delete room by ID")
+    @DeleteMapping("/rooms/delete/{roomId}")
+    public ResponseEntity<?> deleteRoom(@PathVariable("roomId") Integer roomId) {
+        try {
+            roomService.deleteRoom(roomId);
+            return ResponseEntity.ok(msg("DELETESUCCESS", "Room deleted successfully"));
+        } catch (IllegalStateException ex) {
+            if ("ROOM_NOT_FOUND".equals(ex.getMessage())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(msg("DELETEFAILS", "Room doesn't exist"));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(msg("DELETEFAILS", "Unable to delete room"));
         }
     }
 }

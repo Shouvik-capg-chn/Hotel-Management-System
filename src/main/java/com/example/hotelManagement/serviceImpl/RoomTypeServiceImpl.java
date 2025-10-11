@@ -67,6 +67,17 @@ public class RoomTypeServiceImpl implements RoomTypeService {
             return true;
         }).orElse(false);
     }
+    
+    @Override
+    @Transactional
+    public boolean deleteRoomType(Integer roomTypeId)
+    {
+        if (!roomTypeRepository.existsById(roomTypeId)) {
+            return false;
+        }
+        roomTypeRepository.deleteById(roomTypeId);
+        return true;
+    }
 
     /**
      * Return entity or null to let the controller decide the response shape.
